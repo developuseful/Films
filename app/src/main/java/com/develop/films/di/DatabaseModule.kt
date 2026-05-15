@@ -1,9 +1,15 @@
 package com.develop.films.di
 
 import android.app.Application
+import androidx.room.Room
+import com.develop.films.data.local.MovieDatabase
+import com.develop.films.data.repository.MovieRepositoryImpl
 import com.develop.films.domain.repository.MovieRepository
-import com.develop.films.domain.use_case.AddMovieUseCase
-import com.develop.films.domain.use_case.GetMoviesUseCase
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -18,14 +24,6 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideMovieRepository(db: MovieDatabase): MovieRepository {
-        return MovieRepositoryImpl(db.movieDao) // Реализация репозитория из слоя Data
+        return MovieRepositoryImpl(db.movieDao())
     }
-
-    @Provides
-    @Singleton
-    fun provideAddMovieUseCase(repo: MovieRepository) = AddMovieUseCase(repo)
-
-    @Provides
-    @Singleton
-    fun provideGetMoviesUseCase(repo: MovieRepository) = GetMoviesUseCase(repo)
 }

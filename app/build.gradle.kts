@@ -1,18 +1,19 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
 }
 
 android {
     namespace = "com.develop.films"
-    compileSdk = 35 // Рекомендую пока оставить 35, так как 36 (Android 17) еще в глубокой альфе и может конфликтовать с библиотеками
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.develop.films"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -32,6 +33,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    kotlinOptions {
+        jvmTarget = "11"
+    }
     buildFeatures {
         compose = true
     }
@@ -50,6 +54,8 @@ dependencies {
     // ROOM (Исправлено и расширено)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.navigation:navigation-compose:2.7.3")
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -72,4 +78,9 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-fragment:1.3.0")   // Для Fragments с NavGraph
     implementation("androidx.hilt:hilt-work:1.3.0")                 // Для WorkManager
     ksp("androidx.hilt:hilt-compiler:1.3.0")
+
+    // WorkManager (with PendingIntent flag fix for Android 12+)
+    implementation(libs.androidx.work.runtime)
+
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 }
