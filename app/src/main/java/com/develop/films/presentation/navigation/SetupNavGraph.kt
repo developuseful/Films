@@ -28,6 +28,7 @@ fun SetupNavGraph() {
             val viewModel: MovieListViewModel = hiltViewModel()
             MovieListScreen(
                 state = viewModel.state.collectAsState().value,
+                onSelectGenre = { genre -> viewModel.onEvent(MovieListEvent.SelectGenre(genre)) },
                 onAddMovie = { navController.navigate(Screen.AddEditMovie.route) },
                 onMovieClick = { movieId ->
                     navController.navigate(Screen.MovieDetail.createRoute(movieId))
