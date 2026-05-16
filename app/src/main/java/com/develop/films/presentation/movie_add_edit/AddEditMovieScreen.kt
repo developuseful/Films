@@ -168,6 +168,17 @@ fun AddEditMovieScreen(
                 )
             }
 
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = state.isFavorite,
+                    onCheckedChange = { onEvent(AddEditMovieEvent.ChangeFavorite(it)) }
+                )
+                Text(
+                    text = "Избранное",
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()

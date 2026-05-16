@@ -25,12 +25,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import com.develop.films.presentation.movie_list.components.MovieItem
+import com.develop.films.presentation.movie_list.MovieListTab
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +49,7 @@ import com.develop.films.domain.model.Movie
 fun MovieListScreen(
     state: MovieListState,
     onSelectGenre: (String) -> Unit,
+    onSelectTab: (MovieListTab) -> Unit,
     onAddMovie: () -> Unit,
     onMovieClick: (Int) -> Unit,
     onEditMovie: (Int) -> Unit,
@@ -80,6 +84,19 @@ fun MovieListScreen(
                 .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            TabRow(
+                selectedTabIndex = state.selectedTab.ordinal,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                MovieListTab.values().forEach { tab ->
+                    Tab(
+                        selected = state.selectedTab == tab,
+                        onClick = { onSelectTab(tab) },
+                        text = { Text(tab.title) }
+                    )
+                }
+            }
+
             AnimatedVisibility(
                 visible = state.genreOptions.isNotEmpty() && isFilterVisible,
                 enter = fadeIn(animationSpec = tween(durationMillis = 220)) +
@@ -147,7 +164,7 @@ fun MovieListScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Фильмов не найдено для жанра \"${state.selectedGenre}\"",
+                        text = "Фильмов не найдено для жанра \"${state.selectedGenre}\" и вкладки \"${state.selectedTab.title}\"",
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }

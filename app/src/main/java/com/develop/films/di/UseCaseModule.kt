@@ -6,6 +6,7 @@ import com.develop.films.domain.use_case.DeleteMovieUseCase
 import com.develop.films.domain.use_case.GetMovieByIdFlowUseCase
 import com.develop.films.domain.use_case.GetMovieByIdUseCase
 import com.develop.films.domain.use_case.GetMoviesUseCase
+import com.develop.films.domain.use_case.UpdateMovieUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,4 +36,8 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun provideDeleteMovieUseCase(repository: MovieRepository) = DeleteMovieUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideUpdateMovieUseCase(repository: MovieRepository) = UpdateMovieUseCase(repository)
 }

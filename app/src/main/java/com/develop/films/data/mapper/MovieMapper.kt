@@ -10,6 +10,7 @@ fun MovieEntity.toMovie(): Movie = Movie(
     genre = genre,
     year = year,
     isWatched = isWatched,
+    isFavorite = isFavorite,
     rating = rating,
     comment = comment
 )
@@ -21,6 +22,7 @@ fun Movie.toEntity(): MovieEntity = MovieEntity(
     genre = genre,
     year = year,
     isWatched = isWatched,
+    isFavorite = isFavorite,
     rating = rating,
     comment = comment
 )

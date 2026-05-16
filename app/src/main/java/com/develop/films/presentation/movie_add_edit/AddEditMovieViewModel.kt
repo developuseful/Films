@@ -51,6 +51,8 @@ class AddEditMovieViewModel @Inject constructor(
                 _state.value = _state.value.copy(comment = event.value)
             is AddEditMovieEvent.ChangeWatched ->
                 _state.value = _state.value.copy(isWatched = event.isWatched)
+            is AddEditMovieEvent.ChangeFavorite ->
+                _state.value = _state.value.copy(isFavorite = event.isFavorite)
             AddEditMovieEvent.SaveMovie -> {
                 saveMovie()
             }
@@ -67,6 +69,7 @@ class AddEditMovieViewModel @Inject constructor(
                     genre = movie.genre.orEmpty(),
                     year = movie.year?.toString().orEmpty(),
                     isWatched = movie.isWatched,
+                    isFavorite = movie.isFavorite,
                     rating = movie.rating?.toString().orEmpty(),
                     comment = movie.comment.orEmpty(),
                     isExisting = true
@@ -90,6 +93,7 @@ class AddEditMovieViewModel @Inject constructor(
                 genre = currentState.genre.trim().ifEmpty { null },
                 year = currentState.year.toIntOrNull(),
                 isWatched = currentState.isWatched,
+                isFavorite = currentState.isFavorite,
                 rating = currentState.rating.toIntOrNull(),
                 comment = currentState.comment.trim().ifEmpty { null }
             )

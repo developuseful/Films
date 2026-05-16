@@ -7,6 +7,7 @@ data class Movie(
     val genre: String?,
     val year: Int?,
     val isWatched: Boolean,
+    val isFavorite: Boolean,
     val rating: Int?, // от 1 до 10
     val comment: String?
 )

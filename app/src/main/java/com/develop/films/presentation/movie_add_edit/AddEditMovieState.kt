@@ -7,6 +7,7 @@ data class AddEditMovieState(
     val genre: String = "",
     val year: String = "",
     val isWatched: Boolean = false,
+    val isFavorite: Boolean = false,
     val rating: String = "",
     val comment: String = "",
     val isExisting: Boolean = false

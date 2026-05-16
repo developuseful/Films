@@ -8,5 +8,6 @@ sealed class AddEditMovieEvent {
     data class EnteredRating(val value: String) : AddEditMovieEvent()
     data class EnteredComment(val value: String) : AddEditMovieEvent()
     data class ChangeWatched(val isWatched: Boolean) : AddEditMovieEvent()
+    data class ChangeFavorite(val isFavorite: Boolean) : AddEditMovieEvent()
     object SaveMovie : AddEditMovieEvent()
 }

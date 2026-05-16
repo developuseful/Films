@@ -6,7 +6,7 @@ import com.develop.films.data.local.entity.MovieEntity
 
 @Database(
     entities = [MovieEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class MovieDatabase : RoomDatabase() {

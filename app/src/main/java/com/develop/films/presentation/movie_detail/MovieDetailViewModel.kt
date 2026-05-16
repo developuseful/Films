@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.develop.films.domain.use_case.GetMovieByIdFlowUseCase
+import com.develop.films.domain.use_case.UpdateMovieUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MovieDetailViewModel @Inject constructor(
     private val getMovieByIdFlowUseCase: GetMovieByIdFlowUseCase,
+    private val updateMovieUseCase: UpdateMovieUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -34,6 +36,20 @@ class MovieDetailViewModel @Inject constructor(
             }
         } else {
             _state.value = MovieDetailState(errorMessage = "Фильм не найден")
+        }
+    }
+
+    fun onToggleWatched(isWatched: Boolean) {
+        val movie = _state.value.movie ?: return
+        viewModelScope.launch {
+            updateMovieUseCase(movie.copy(isWatched = isWatched))
+        }
+    }
+
+    fun onToggleFavorite(isFavorite: Boolean) {
+        val movie = _state.value.movie ?: return
+        viewModelScope.launch {
+            updateMovieUseCase(movie.copy(isFavorite = isFavorite))
         }
     }
 }

@@ -44,7 +44,14 @@ class MovieListViewModel @Inject constructor(
                 val currentMovies = _state.value.allMovies
                 _state.value = _state.value.copy(
                     selectedGenre = event.genre,
-                    movies = filterMovies(currentMovies, event.genre)
+                    movies = filterMovies(currentMovies, event.genre, _state.value.selectedTab)
+                )
+            }
+            is MovieListEvent.SelectTab -> {
+                val currentMovies = _state.value.allMovies
+                _state.value = _state.value.copy(
+                    selectedTab = event.tab,
+                    movies = filterMovies(currentMovies, _state.value.selectedGenre, event.tab)
                 )
             }
         }
@@ -65,13 +72,19 @@ class MovieListViewModel @Inject constructor(
             allMovies = movies,
             genreOptions = genres,
             selectedGenre = selectedGenre,
-            movies = filterMovies(movies, selectedGenre)
+            movies = filterMovies(movies, selectedGenre, _state.value.selectedTab)
         )
     }
 
-    private fun filterMovies(movies: List<Movie>, genre: String): List<Movie> {
-        return if (genre == ALL_GENRES_LABEL) movies
+    private fun filterMovies(movies: List<Movie>, genre: String, tab: MovieListTab): List<Movie> {
+        val byGenre = if (genre == ALL_GENRES_LABEL) movies
         else movies.filter { it.genre == genre }
+
+        return when (tab) {
+            MovieListTab.TO_WATCH -> byGenre.filter { !it.isWatched }
+            MovieListTab.WATCHED -> byGenre.filter { it.isWatched }
+            MovieListTab.FAVORITES -> byGenre.filter { it.isFavorite }
+        }
     }
 }
 
@@ -79,5 +92,6 @@ data class MovieListState(
     val allMovies: List<Movie> = emptyList(),
     val movies: List<Movie> = emptyList(),
     val selectedGenre: String = ALL_GENRES_LABEL,
+    val selectedTab: MovieListTab = MovieListTab.TO_WATCH,
     val genreOptions: List<String> = listOf(ALL_GENRES_LABEL)
 )

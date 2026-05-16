@@ -3,6 +3,7 @@ package com.develop.films.presentation.movie_detail
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
@@ -34,7 +36,9 @@ import com.develop.films.domain.model.Movie
 fun MovieDetailScreen(
     state: MovieDetailState,
     onBack: () -> Unit,
-    onEdit: () -> Unit
+    onEdit: () -> Unit,
+    onToggleWatched: (Boolean) -> Unit,
+    onToggleFavorite: (Boolean) -> Unit
 ) {
 
     Scaffold(
@@ -74,7 +78,12 @@ fun MovieDetailScreen(
                     }
                 }
                 state.movie != null -> {
-                    MovieDetailContent(movie = state.movie, onEdit = onEdit)
+                    MovieDetailContent(
+                        movie = state.movie,
+                        onEdit = onEdit,
+                        onToggleWatched = onToggleWatched,
+                        onToggleFavorite = onToggleFavorite
+                    )
                 }
             }
         }
@@ -82,7 +91,12 @@ fun MovieDetailScreen(
 }
 
 @Composable
-private fun MovieDetailContent(movie: Movie, onEdit: () -> Unit) {
+private fun MovieDetailContent(
+    movie: Movie,
+    onEdit: () -> Unit,
+    onToggleWatched: (Boolean) -> Unit,
+    onToggleFavorite: (Boolean) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -109,6 +123,36 @@ private fun MovieDetailContent(movie: Movie, onEdit: () -> Unit) {
             text = "Рейтинг: ${movie.rating?.toString() ?: "—"} ${if (movie.isWatched) "• Просмотрено" else "• Не просмотрено"}",
             style = MaterialTheme.typography.bodyMedium
         )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Checkbox(
+                checked = movie.isWatched,
+                onCheckedChange = onToggleWatched
+            )
+            Text(
+                text = if (movie.isWatched) "Просмотрено" else "Не просмотрено",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Checkbox(
+                checked = movie.isFavorite,
+                onCheckedChange = onToggleFavorite
+            )
+            Text(
+                text = if (movie.isFavorite) "Избранное" else "Не в избранном",
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
 
         Divider()
 

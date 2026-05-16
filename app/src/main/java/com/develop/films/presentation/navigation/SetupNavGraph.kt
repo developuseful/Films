@@ -29,6 +29,7 @@ fun SetupNavGraph() {
             MovieListScreen(
                 state = viewModel.state.collectAsState().value,
                 onSelectGenre = { genre -> viewModel.onEvent(MovieListEvent.SelectGenre(genre)) },
+                onSelectTab = { tab -> viewModel.onEvent(MovieListEvent.SelectTab(tab)) },
                 onAddMovie = { navController.navigate(Screen.AddEditMovie.route) },
                 onMovieClick = { movieId ->
                     navController.navigate(Screen.MovieDetail.createRoute(movieId))
@@ -53,7 +54,9 @@ fun SetupNavGraph() {
             MovieDetailScreen(
                 state = viewModel.state.collectAsState().value,
                 onBack = { navController.popBackStack() },
-                onEdit = { navController.navigate(Screen.AddEditMovie.createRoute(movieId)) }
+                onEdit = { navController.navigate(Screen.AddEditMovie.createRoute(movieId)) },
+                onToggleWatched = { isWatched -> viewModel.onToggleWatched(isWatched) },
+                onToggleFavorite = { isFavorite -> viewModel.onToggleFavorite(isFavorite) }
             )
         }
 
