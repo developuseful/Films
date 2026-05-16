@@ -112,12 +112,25 @@ fun AddEditMovieScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
-                value = state.description,
-                onValueChange = { onEvent(AddEditMovieEvent.EnteredDescription(it)) },
-                label = { Text("Описание") },
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                OutlinedTextField(
+                    value = state.year,
+                    onValueChange = { onEvent(AddEditMovieEvent.EnteredYear(it)) },
+                    label = { Text("Год") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.weight(1f)
+                )
+                OutlinedTextField(
+                    value = state.rating,
+                    onValueChange = { onEvent(AddEditMovieEvent.EnteredRating(it)) },
+                    label = { Text("Рейтинг") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.weight(1f)
+                )
+            }
 
             // Контейнер Material 3 для выпадающих списков
             ExposedDropdownMenuBox(
@@ -157,6 +170,15 @@ fun AddEditMovieScreen(
                 }
             }
 
+            OutlinedTextField(
+                value = state.description,
+                onValueChange = { onEvent(AddEditMovieEvent.EnteredDescription(it)) },
+                label = { Text("Описание") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = state.isWatched,
@@ -179,25 +201,7 @@ fun AddEditMovieScreen(
                 )
             }
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = state.year,
-                    onValueChange = { onEvent(AddEditMovieEvent.EnteredYear(it)) },
-                    label = { Text("Год") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = state.rating,
-                    onValueChange = { onEvent(AddEditMovieEvent.EnteredRating(it)) },
-                    label = { Text("Рейтинг") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-            }
+
 
             OutlinedTextField(
                 value = state.comment,
