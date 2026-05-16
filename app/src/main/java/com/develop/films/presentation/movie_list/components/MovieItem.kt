@@ -48,7 +48,7 @@ fun MovieItem(
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(start = 16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -61,9 +61,6 @@ fun MovieItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-//                Button(onClick = onDelete) {
-//                    Text(text = "Удалить")
-//                }
                 Box {
                     IconButton(onClick = { expanded = true }) {
                         Icon(
@@ -88,26 +85,26 @@ fun MovieItem(
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = movie.description.orEmpty(),
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Жанр: ${movie.genre.orEmpty()} • ${movie.year ?: "—"}",
-                style = MaterialTheme.typography.bodySmall
-            )
-
-            Text(
-                text = "Рейтинг: ${movie.rating ?: "—"} ${if (movie.isWatched) "• Просмотрено" else "• Не смотрел"}",
-                style = MaterialTheme.typography.bodySmall
-            )
+//            Spacer(modifier = Modifier.height(4.dp))
+//
+//            Text(
+//                text = movie.description.orEmpty(),
+//                style = MaterialTheme.typography.bodyMedium,
+//                maxLines = 2,
+//                overflow = TextOverflow.Ellipsis
+//            )
+//
+//            Spacer(modifier = Modifier.height(8.dp))
+//
+//            Text(
+//                text = "Жанр: ${movie.genre.orEmpty()} • ${movie.year ?: "—"}",
+//                style = MaterialTheme.typography.bodySmall
+//            )
+//
+//            Text(
+//                text = "Рейтинг: ${movie.rating ?: "—"} ${if (movie.isWatched) "• Просмотрено" else "• Не смотрел"}",
+//                style = MaterialTheme.typography.bodySmall
+//            )
         }
     }
 }

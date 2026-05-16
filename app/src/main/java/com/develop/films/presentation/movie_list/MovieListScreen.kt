@@ -57,7 +57,7 @@ fun MovieListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Мои фильмы") },
+                title = { },
                 actions = {
                     IconButton(onClick = { isFilterVisible = !isFilterVisible }) {
                         Icon(
@@ -77,8 +77,7 @@ fun MovieListScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
+                .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             AnimatedVisibility(
@@ -104,6 +103,7 @@ fun MovieListScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .padding(horizontal = 12.dp)
                                 .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
                         )
 
@@ -124,7 +124,6 @@ fun MovieListScreen(
                         }
                     }
 
-                    Divider()
                 }
             }
 
