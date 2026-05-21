@@ -13,5 +13,10 @@ data class MovieEntity(
     val isWatched: Boolean,
     val isFavorite: Boolean,
     val rating: Int?,
-    val comment: String?
+    val comment: String?,
+    
+    // ✅ Новые поля для разделения локальных/облачных фильмов
+    val isLocal: Boolean = false,          // true = только локально
+    val syncedWithAccount: Boolean = false, // был ли синхронизирован
+    val accountId: String? = null          // Email пользователя если синхронизирован
 )
