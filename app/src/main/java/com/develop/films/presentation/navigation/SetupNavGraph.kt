@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -27,6 +29,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import com.develop.films.util.UserPreferences
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
@@ -47,10 +50,17 @@ import com.google.android.gms.common.api.ApiException
 fun SetupNavGraph() {
     val navController = rememberNavController()
     val context = LocalContext.current
+    val startDestination = remember {
+        if (UserPreferences.isLoggedIn(context)) {
+            Screen.MovieList.route
+        } else {
+            Screen.Login.route
+        }
+    }
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = startDestination
     ) {
         composable(Screen.Login.route) {
             LoginScreen(
@@ -170,6 +180,11 @@ fun LoginScreen(
             try {
                 val account = task.getResult(ApiException::class.java)
                 if (account != null) {
+                    UserPreferences.saveGoogleAccount(
+                        context,
+                        account.displayName.orEmpty(),
+                        account.email.orEmpty()
+                    )
                     onLoginSuccess()
                 } else {
                     errorMessage = "Не удалось получить аккаунт Google"
@@ -181,6 +196,8 @@ fun LoginScreen(
             errorMessage = "Вход отменён"
         }
     }
+
+    var showContinueWithoutAccountDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         GoogleSignIn.getLastSignedInAccount(context)?.let {
@@ -219,9 +236,35 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.padding(12.dp))
             Button(
-                onClick = onContinueWithoutAccount
+                onClick = { showContinueWithoutAccountDialog = true }
             ) {
                 Text(text = "Продолжить без аккаунта")
+            }
+            if (showContinueWithoutAccountDialog) {
+                AlertDialog(
+                    onDismissRequest = { showContinueWithoutAccountDialog = false },
+                    title = { Text(text = "Продолжить без аккаунта") },
+                    text = {
+                        Text(
+                            text = "Вы используете локальный режим. В случае потери, кражи или поломки телефона список нельзя будет восстановить.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showContinueWithoutAccountDialog = false
+                            UserPreferences.saveLocalMode(context)
+                            onContinueWithoutAccount()
+                        }) {
+                            Text(text = "Продолжить")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showContinueWithoutAccountDialog = false }) {
+                            Text(text = "Отмена")
+                        }
+                    }
+                )
             }
             Spacer(modifier = Modifier.padding(8.dp))
             if (!errorMessage.isNullOrBlank()) {

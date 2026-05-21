@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.develop.films.util.UserPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -45,6 +46,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var account by remember { mutableStateOf<GoogleSignInAccount?>(null) }
+    var isLocalMode by remember { mutableStateOf(UserPreferences.isLocalMode(context)) }
 
     val googleSignInClient = remember(context) {
         GoogleSignIn.getClient(
@@ -62,8 +64,14 @@ fun SettingsScreen(
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
                 val signedAccount = task.getResult(ApiException::class.java)
-                if (signedAccount != null) {
+                    if (signedAccount != null) {
+                    UserPreferences.saveGoogleAccount(
+                        context,
+                        signedAccount.displayName.orEmpty(),
+                        signedAccount.email.orEmpty()
+                    )
                     account = signedAccount
+                    isLocalMode = false
                     errorMessage = null
                     onSignInSuccess()
                 } else {
@@ -103,43 +111,67 @@ fun SettingsScreen(
 
             Spacer(modifier = Modifier.padding(12.dp))
 
-            if (account != null) {
-                Text(
-                    text = "Вход выполнен как",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Text(
-                    text = account?.displayName.orEmpty(),
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.padding(4.dp))
-                Text(
-                    text = account?.email.orEmpty(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.padding(20.dp))
-                Button(onClick = {
-                    googleSignInClient.signOut().addOnCompleteListener {
-                        account = null
-                        errorMessage = null
-                        onSignOut()
+            when {
+                isLocalMode -> {
+                    Text(
+                        text = "Режим: локальный",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.padding(8.dp))
+                    Text(
+                        text = "Данные хранятся только на устройстве. В случае потери или поломки телефона список восстановить нельзя.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.padding(12.dp))
+                    Button(onClick = {
+                        launcher.launch(googleSignInClient.signInIntent)
+                    }) {
+                        Text(text = "Войти в аккаунт")
                     }
-                }) {
-                    Text(text = "Выйти из аккаунта")
                 }
-            } else {
-                Text(
-                    text = "Пользователь не авторизован",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Spacer(modifier = Modifier.padding(12.dp))
-                Button(onClick = {
-                    launcher.launch(googleSignInClient.signInIntent)
-                }) {
-                    Text(text = "Войти в аккаунт")
+                account != null -> {
+                    Text(
+                        text = "Вход выполнен как",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = account?.displayName.orEmpty(),
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.padding(4.dp))
+                    Text(
+                        text = account?.email.orEmpty(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Spacer(modifier = Modifier.padding(20.dp))
+                    Button(onClick = {
+                        googleSignInClient.signOut().addOnCompleteListener {
+                            UserPreferences.clear(context)
+                            account = null
+                            isLocalMode = false
+                            errorMessage = null
+                            onSignOut()
+                        }
+                    }) {
+                        Text(text = "Выйти из аккаунта")
+                    }
+                }
+                else -> {
+                    Text(
+                        text = "Пользователь не авторизован",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Spacer(modifier = Modifier.padding(12.dp))
+                    Button(onClick = {
+                        launcher.launch(googleSignInClient.signInIntent)
+                    }) {
+                        Text(text = "Войти в аккаунт")
+                    }
                 }
             }
 

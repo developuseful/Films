@@ -76,6 +76,12 @@ fun MovieListScreen(
                             contentDescription = "Фильтр"
                         )
                     }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Настройки"
+                        )
+                    }
                 }
             )
         }
@@ -215,12 +221,6 @@ fun MovieListScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    IconButton(onClick = onSettingsClick) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Настройки"
-                        )
-                    }
                     IconButton(onClick = onAddMovie) {
                         Icon(
                             imageVector = Icons.Default.Add,
