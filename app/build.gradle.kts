@@ -4,6 +4,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.21"
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -83,4 +85,14 @@ dependencies {
     implementation(libs.androidx.work.runtime)
 
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.realtime.db)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 }

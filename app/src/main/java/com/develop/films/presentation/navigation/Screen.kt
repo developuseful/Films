@@ -1,6 +1,7 @@
 package com.develop.films.presentation.navigation
 
 sealed class Screen(val route: String) {
+    object Login : Screen("login")
     object MovieList : Screen("movie_list")
     object MovieDetail : Screen("movie_detail") {
         fun createRoute(movieId: Int): String = "${route}/$movieId"

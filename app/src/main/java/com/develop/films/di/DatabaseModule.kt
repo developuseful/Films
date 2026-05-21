@@ -28,6 +28,7 @@ object DatabaseModule {
 
         return Room.databaseBuilder(app, MovieDatabase::class.java, "movies_db")
             .addMigrations(migration1to2)
+            .fallbackToDestructiveMigration()
             .build()
     }
 
