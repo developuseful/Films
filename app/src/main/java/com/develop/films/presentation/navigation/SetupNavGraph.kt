@@ -29,7 +29,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
-import com.develop.films.util.UserPreferences
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
@@ -40,10 +39,13 @@ import com.develop.films.presentation.movie_detail.MovieDetailViewModel
 import com.develop.films.presentation.movie_list.MovieListEvent
 import com.develop.films.presentation.movie_list.MovieListScreen
 import com.develop.films.presentation.movie_list.MovieListViewModel
+import com.develop.films.R
 import com.develop.films.presentation.settings.SettingsScreen
+import com.develop.films.firebase.FirebaseHelper
+import com.develop.films.util.UserPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.develop.films.firebase.FirebaseHelper
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.android.gms.common.api.ApiException
 
 @Composable
@@ -168,6 +170,7 @@ fun LoginScreen(
             context,
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestIdToken(context.getString(R.string.default_web_client_id))
                 .build()
         )
     }
@@ -180,12 +183,30 @@ fun LoginScreen(
             try {
                 val account = task.getResult(ApiException::class.java)
                 if (account != null) {
-                    UserPreferences.saveGoogleAccount(
-                        context,
-                        account.displayName.orEmpty(),
-                        account.email.orEmpty()
-                    )
-                    onLoginSuccess()
+                    val idToken = account.idToken
+                    if (!idToken.isNullOrEmpty()) {
+                        val credential = GoogleAuthProvider.getCredential(idToken, null)
+                        FirebaseHelper.auth.signInWithCredential(credential)
+                            .addOnCompleteListener { authTask ->
+                                if (authTask.isSuccessful) {
+                                    UserPreferences.saveGoogleAccount(
+                                        context,
+                                        account.displayName.orEmpty(),
+                                        account.email.orEmpty()
+                                    )
+                                    onLoginSuccess()
+                                } else {
+                                    errorMessage = "Firebase sign-in failed: ${authTask.exception?.message}"
+                                }
+                            }
+                    } else {
+                        UserPreferences.saveGoogleAccount(
+                            context,
+                            account.displayName.orEmpty(),
+                            account.email.orEmpty()
+                        )
+                        errorMessage = "Вход выполнен локально. Чтобы зарегистрировать пользователя в Firebase, добавьте requestIdToken в GoogleSignInOptions."
+                    }
                 } else {
                     errorMessage = "Не удалось получить аккаунт Google"
                 }

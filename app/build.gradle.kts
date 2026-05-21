@@ -56,6 +56,7 @@ dependencies {
     // ROOM (Исправлено и расширено)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.firebase.database)
     ksp("androidx.room:room-compiler:2.6.1")
     implementation("androidx.navigation:navigation-compose:2.7.3")
 

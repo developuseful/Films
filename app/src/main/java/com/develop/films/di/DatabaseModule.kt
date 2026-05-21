@@ -7,6 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.develop.films.data.local.MovieDatabase
 import com.develop.films.data.repository.MovieRepositoryImpl
 import com.develop.films.domain.repository.MovieRepository
+import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,7 +35,11 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideMovieRepository(db: MovieDatabase): MovieRepository {
-        return MovieRepositoryImpl(db.movieDao())
+    fun provideMovieRepository(
+        db: MovieDatabase,
+        realtimeDatabase: FirebaseDatabase,
+        app: Application
+    ): MovieRepository {
+        return MovieRepositoryImpl(db.movieDao(), realtimeDatabase, app)
     }
 }

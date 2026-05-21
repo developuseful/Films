@@ -15,6 +15,7 @@ ksp = "2.2.10-1.0.28"
 hiltNavigation = "1.2.0"
 workRuntime = "2.9.1"
 firebase-bom = "33.1.1"
+firebaseDatabase = "22.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +54,7 @@ firebase-storage = { group = "com.google.firebase", name = "firebase-storage-ktx
 firebase-realtime-db = { group = "com.google.firebase", name = "firebase-database-ktx" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
 firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

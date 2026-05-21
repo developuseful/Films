@@ -30,11 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.develop.films.R
 import com.develop.films.util.UserPreferences
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.GoogleAuthProvider
+import com.develop.films.firebase.FirebaseHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +56,7 @@ fun SettingsScreen(
             context,
             GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestIdToken(context.getString(R.string.default_web_client_id))
                 .build()
         )
     }
@@ -60,20 +64,48 @@ fun SettingsScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == android.app.Activity.RESULT_OK) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+                if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val signInTask = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
-                val signedAccount = task.getResult(ApiException::class.java)
+                val signedAccount = signInTask.getResult(ApiException::class.java)
                     if (signedAccount != null) {
-                    UserPreferences.saveGoogleAccount(
-                        context,
-                        signedAccount.displayName.orEmpty(),
-                        signedAccount.email.orEmpty()
-                    )
-                    account = signedAccount
-                    isLocalMode = false
-                    errorMessage = null
-                    onSignInSuccess()
+                    val idToken = signedAccount.idToken
+                    if (!idToken.isNullOrEmpty()) {
+                        val credential = GoogleAuthProvider.getCredential(idToken, null)
+                        FirebaseHelper.auth.signInWithCredential(credential)
+                            .addOnCompleteListener { authTask ->
+                                if (authTask.isSuccessful) {
+                                    UserPreferences.saveGoogleAccount(
+                                        context,
+                                        signedAccount.displayName.orEmpty(),
+                                        signedAccount.email.orEmpty()
+                                    )
+                                    account = signedAccount
+                                    isLocalMode = false
+                                    errorMessage = null
+                                    onSignInSuccess()
+                                } else {
+                                    UserPreferences.saveGoogleAccount(
+                                        context,
+                                        signedAccount.displayName.orEmpty(),
+                                        signedAccount.email.orEmpty()
+                                    )
+                                    account = signedAccount
+                                    isLocalMode = false
+                                    errorMessage = "Firebase sign-in failed: ${authTask.exception?.message}. Если нужно, настройте requestIdToken в GoogleSignInOptions."
+                                }
+                            }
+                    } else {
+                        UserPreferences.saveGoogleAccount(
+                            context,
+                            signedAccount.displayName.orEmpty(),
+                            signedAccount.email.orEmpty()
+                        )
+                        account = signedAccount
+                        isLocalMode = false
+                        errorMessage = "Вход выполнен локально. Чтобы авторизовать в Firebase, добавьте requestIdToken (web client ID) в GoogleSignInOptions."
+                        onSignInSuccess()
+                    }
                 } else {
                     errorMessage = "Не удалось получить аккаунт Google"
                 }

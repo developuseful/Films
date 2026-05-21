@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "287496955883",
+    "firebase_url": "https://filmsapp-d6c02-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "filmsapp-d6c02",
     "storage_bucket": "filmsapp-d6c02.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.develop.films"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "287496955883-cn4en0q6ksofjo37280tk64astps4625.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.develop.films",
+            "certificate_hash": "dd6f0a14175705117a5c442538fd83c340430099"
+          }
+        },
+        {
+          "client_id": "287496955883-scl2923cf119ijdpkaoakkjsvk13i6kg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD8GBaaJoTscV8JIHEFT_VyNEJ-du0FdoA"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "287496955883-scl2923cf119ijdpkaoakkjsvk13i6kg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
