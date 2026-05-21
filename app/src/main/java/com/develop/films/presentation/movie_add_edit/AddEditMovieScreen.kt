@@ -112,25 +112,33 @@ fun AddEditMovieScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+//            Row(
+//                horizontalArrangement = Arrangement.spacedBy(12.dp),
+//                modifier = Modifier.fillMaxWidth()
+//            ) {
+//                OutlinedTextField(
+//                    value = state.year,
+//                    onValueChange = { onEvent(AddEditMovieEvent.EnteredYear(it)) },
+//                    label = { Text("Год") },
+//                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+//                    modifier = Modifier.weight(1f)
+//                )
+////                OutlinedTextField(
+////                    value = state.rating,
+////                    onValueChange = { onEvent(AddEditMovieEvent.EnteredRating(it)) },
+////                    label = { Text("Рейтинг") },
+////                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+////                    modifier = Modifier.weight(1f)
+////                )
+//            }
+
+            OutlinedTextField(
+                value = state.year,
+                onValueChange = { onEvent(AddEditMovieEvent.EnteredYear(it)) },
+                label = { Text("Год") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = state.year,
-                    onValueChange = { onEvent(AddEditMovieEvent.EnteredYear(it)) },
-                    label = { Text("Год") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = state.rating,
-                    onValueChange = { onEvent(AddEditMovieEvent.EnteredRating(it)) },
-                    label = { Text("Рейтинг") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-            }
+            )
 
             // Контейнер Material 3 для выпадающих списков
             ExposedDropdownMenuBox(

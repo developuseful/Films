@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -56,15 +57,15 @@ fun MovieItem(
             ) {
                 Text(
                     text = movie.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.bodyLarge,
+                    //fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Box {
                     IconButton(onClick = { expanded = true }) {
                         Icon(
-                            imageVector = Icons.Default.MoreVert, contentDescription = "Меню"
+                            imageVector = Icons.Default.ArrowDropDown, contentDescription = "Меню"
                         )
                     }
 
@@ -73,7 +74,7 @@ fun MovieItem(
                         onDismissRequest = { expanded = false },
                         modifier = Modifier.align(Alignment.TopEnd)
                     ) {
-                            DropdownMenuItem(text = { Text("Изменить") }, onClick = {
+                        DropdownMenuItem(text = { Text("Изменить") }, onClick = {
                             expanded = false
                             onEdit()
                         })
@@ -85,26 +86,25 @@ fun MovieItem(
                 }
             }
 
+
+//            if (movie.genre != null) {
+//                Text(
+//                    text = movie.genre,
+//                    style = MaterialTheme.typography.bodySmall
+//                )
+//            }
+//
 //            Spacer(modifier = Modifier.height(4.dp))
 //
-//            Text(
-//                text = movie.description.orEmpty(),
-//                style = MaterialTheme.typography.bodyMedium,
-//                maxLines = 2,
-//                overflow = TextOverflow.Ellipsis
-//            )
+//            if (movie.year != null) {
+//                Text(
+//                    text = movie.year.toString(),
+//                    style = MaterialTheme.typography.bodySmall
+//                )
+//            }
 //
 //            Spacer(modifier = Modifier.height(8.dp))
-//
-//            Text(
-//                text = "Жанр: ${movie.genre.orEmpty()} • ${movie.year ?: "—"}",
-//                style = MaterialTheme.typography.bodySmall
-//            )
-//
-//            Text(
-//                text = "Рейтинг: ${movie.rating ?: "—"} ${if (movie.isWatched) "• Просмотрено" else "• Не смотрел"}",
-//                style = MaterialTheme.typography.bodySmall
-//            )
+
         }
     }
 }

@@ -110,19 +110,17 @@ private fun MovieDetailContent(
             fontWeight = FontWeight.Bold
         )
 
+
         Text(
-            text = listOfNotNull(
-                movie.genre?.let { "Жанр: $it" },
-                movie.year?.let { "Год: $it" }
-            ).joinToString(separator = " • ")
-                .ifEmpty { "Жанр и год не указаны" },
+            text = if (movie.genre != null) "Жанр: ${movie.genre}" else "Жанр: - ",
             style = MaterialTheme.typography.bodyLarge
         )
 
         Text(
-            text = "Рейтинг: ${movie.rating?.toString() ?: "—"} ${if (movie.isWatched) "• Просмотрено" else "• Не просмотрено"}",
-            style = MaterialTheme.typography.bodyMedium
+            text = if (movie.year != null) "Год: ${movie.year}" else "Год: - ",
+            style = MaterialTheme.typography.bodyLarge
         )
+
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
