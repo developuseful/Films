@@ -24,7 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.collectAsState
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -37,13 +37,16 @@ import com.develop.films.presentation.movie_detail.MovieDetailViewModel
 import com.develop.films.presentation.movie_list.MovieListEvent
 import com.develop.films.presentation.movie_list.MovieListScreen
 import com.develop.films.presentation.movie_list.MovieListViewModel
+import com.develop.films.presentation.settings.SettingsScreen
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.develop.films.firebase.FirebaseHelper
 import com.google.android.gms.common.api.ApiException
 
 @Composable
 fun SetupNavGraph() {
     val navController = rememberNavController()
+    val context = LocalContext.current
 
     NavHost(
         navController = navController,
@@ -57,17 +60,26 @@ fun SetupNavGraph() {
                             inclusive = true
                         }
                     }
+                },
+                onContinueWithoutAccount = {
+                    navController.navigate(Screen.MovieList.route) {
+                        popUpTo(Screen.Login.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
 
         composable(Screen.MovieList.route) {
             val viewModel: MovieListViewModel = hiltViewModel()
+
             MovieListScreen(
                 state = viewModel.state.collectAsState().value,
                 onSelectGenre = { genre -> viewModel.onEvent(MovieListEvent.SelectGenre(genre)) },
                 onSelectTab = { tab -> viewModel.onEvent(MovieListEvent.SelectTab(tab)) },
                 onAddMovie = { navController.navigate(Screen.AddEditMovie.route) },
+                onSettingsClick = { navController.navigate(Screen.Settings.route) },
                 onMovieClick = { movieId ->
                     navController.navigate(Screen.MovieDetail.createRoute(movieId))
                 },
@@ -75,6 +87,20 @@ fun SetupNavGraph() {
                     navController.navigate(Screen.AddEditMovie.createRoute(movieId))
                 },
                 onDeleteMovie = { movie -> viewModel.onEvent(MovieListEvent.DeleteMovie(movie)) }
+            )
+        }
+
+        composable(Screen.Settings.route) {
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onSignOut = {
+                    FirebaseHelper.signOut()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Login.route) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                onSignInSuccess = { }
             )
         }
 
@@ -121,7 +147,8 @@ fun SetupNavGraph() {
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onContinueWithoutAccount: () -> Unit
 ) {
     val context = LocalContext.current
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
@@ -181,6 +208,20 @@ fun LoginScreen(
                 }
             ) {
                 Text(text = "Войти через Google")
+            }
+            Spacer(modifier = Modifier.padding(12.dp))
+            Text(
+                text = "Продолжить без аккаунта можно, но данные будут храниться только на устройстве. Если телефон потеряется или сломается, восстановить список будет нельзя.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+            Spacer(modifier = Modifier.padding(12.dp))
+            Button(
+                onClick = onContinueWithoutAccount
+            ) {
+                Text(text = "Продолжить без аккаунта")
             }
             Spacer(modifier = Modifier.padding(8.dp))
             if (!errorMessage.isNullOrBlank()) {

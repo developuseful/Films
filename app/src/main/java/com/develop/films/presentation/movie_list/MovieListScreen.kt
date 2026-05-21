@@ -6,33 +6,36 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Settings
 import com.develop.films.presentation.movie_list.components.MovieItem
 import com.develop.films.presentation.movie_list.MovieListTab
 import androidx.compose.runtime.Composable
@@ -53,6 +56,7 @@ fun MovieListScreen(
     onSelectGenre: (String) -> Unit,
     onSelectTab: (MovieListTab) -> Unit,
     onAddMovie: () -> Unit,
+    onSettingsClick: () -> Unit,
     onMovieClick: (Int) -> Unit,
     onEditMovie: (Int) -> Unit,
     onDeleteMovie: (Movie) -> Unit
@@ -61,9 +65,10 @@ fun MovieListScreen(
     var isFilterVisible by remember { mutableStateOf(false) }
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { },
+                title = { Text("Мои фильмы") },
                 actions = {
                     IconButton(onClick = { isFilterVisible = !isFilterVisible }) {
                         Icon(
@@ -73,119 +78,153 @@ fun MovieListScreen(
                     }
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddMovie) {
-                Text(text = "+")
-            }
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(paddingValues)
         ) {
-            TabRow(
-                selectedTabIndex = state.selectedTab.ordinal,
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                MovieListTab.values().forEach { tab ->
-                    Tab(
-                        selected = state.selectedTab == tab,
-                        onClick = { onSelectTab(tab) },
-                        text = { Text(tab.title) }
-                    )
-                }
-            }
-
-            AnimatedVisibility(
-                visible = state.genreOptions.isNotEmpty() && isFilterVisible,
-                enter = fadeIn(animationSpec = tween(durationMillis = 220)) +
-                    expandVertically(expandFrom = Alignment.Top, animationSpec = tween(durationMillis = 220)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 180)) +
-                    shrinkVertically(shrinkTowards = Alignment.Top, animationSpec = tween(durationMillis = 180))
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ExposedDropdownMenuBox(
-                        expanded = isGenreMenuExpanded,
-                        onExpandedChange = { isGenreMenuExpanded = it },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        OutlinedTextField(
-                            value = state.selectedGenre,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text("Фильтр жанра") },
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = isGenreMenuExpanded)
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp)
-                                .menuAnchor(MenuAnchorType.PrimaryEditable, enabled = true)
+                PrimaryTabRow(
+                    selectedTabIndex = state.selectedTab.ordinal,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    MovieListTab.values().forEach { tab ->
+                        Tab(
+                            selected = state.selectedTab == tab,
+                            onClick = { onSelectTab(tab) },
+                            text = { Text(tab.title) }
                         )
+                    }
+                }
 
-                        ExposedDropdownMenu(
+                AnimatedVisibility(
+                    visible = state.genreOptions.isNotEmpty() && isFilterVisible,
+                    enter = fadeIn(animationSpec = tween(durationMillis = 220)) +
+                            expandVertically(
+                                expandFrom = Alignment.Top,
+                                animationSpec = tween(durationMillis = 220)
+                            ),
+                    exit = fadeOut(animationSpec = tween(durationMillis = 180)) +
+                            shrinkVertically(
+                                shrinkTowards = Alignment.Top,
+                                animationSpec = tween(durationMillis = 180)
+                            )
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ExposedDropdownMenuBox(
                             expanded = isGenreMenuExpanded,
-                            onDismissRequest = { isGenreMenuExpanded = false },
+                            onExpandedChange = { isGenreMenuExpanded = it },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            state.genreOptions.forEach { genre ->
-                                DropdownMenuItem(
-                                    text = { Text(text = genre) },
-                                    onClick = {
-                                        onSelectGenre(genre)
-                                        isGenreMenuExpanded = false
-                                    }
-                                )
+                            OutlinedTextField(
+                                value = state.selectedGenre,
+                                onValueChange = {},
+                                readOnly = true,
+                                label = { Text("Фильтр жанра") },
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = isGenreMenuExpanded)
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp)
+                                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable, enabled = true)
+                            )
+
+                            ExposedDropdownMenu(
+                                expanded = isGenreMenuExpanded,
+                                onDismissRequest = { isGenreMenuExpanded = false },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                state.genreOptions.forEach { genre ->
+                                    DropdownMenuItem(
+                                        text = { Text(text = genre) },
+                                        onClick = {
+                                            onSelectGenre(genre)
+                                            isGenreMenuExpanded = false
+                                        }
+                                    )
+                                }
                             }
                         }
-                    }
 
+                    }
+                }
+
+                if (state.allMovies.isEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 42.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Список фильмов пуст",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                } else if (state.movies.isEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 42.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Фильмов не найдено для жанра \"${state.selectedGenre}\" и вкладки \"${state.selectedTab.title}\"",
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = Center
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentPadding = PaddingValues(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(state.movies, key = { it.id }) { movie ->
+                            MovieItem(
+                                movie = movie,
+                                onClick = { onMovieClick(movie.id) },
+                                onEdit = { onEditMovie(movie.id) },
+                                onDelete = { onDeleteMovie(movie) }
+                            )
+                        }
+                    }
                 }
             }
 
-            if (state.allMovies.isEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 42.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+            Surface(
+                shape = RoundedCornerShape(28.dp),
+                tonalElevation = 8.dp,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = "Список фильмов пуст",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            } else if (state.movies.isEmpty()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 42.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Фильмов не найдено для жанра \"${state.selectedGenre}\" и вкладки \"${state.selectedTab.title}\"",
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = Center
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    contentPadding = PaddingValues(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(state.movies, key = { it.id }) { movie ->
-                        MovieItem(
-                            movie = movie,
-                            onClick = { onMovieClick(movie.id) },
-                            onEdit = { onEditMovie(movie.id) },
-                            onDelete = { onDeleteMovie(movie) }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Настройки"
+                        )
+                    }
+                    IconButton(onClick = onAddMovie) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Добавить фильм"
                         )
                     }
                 }
@@ -193,3 +232,5 @@ fun MovieListScreen(
         }
     }
 }
+
+
